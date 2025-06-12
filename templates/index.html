@@ -1,0 +1,126 @@
+<!-- stylelint-disable -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StyleMimic</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    img { border: 1px solid #ccc; margin-bottom: 1rem; }
+    ul { list-style: disc inside; }
+
+    .palette-box {
+      display: flex;
+      gap: 10px;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .color-block {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #000;
+      border-radius: 4px;
+    }
+
+    .similar-palettes-container {
+      margin-top: 2rem;
+    }
+    .similar-palette {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .similar-palette .color-block {
+      width: 30px;
+      height: 30px;
+      border-radius: 3px;
+      border: 1px solid #333;
+    }
+    .palette-label {
+      margin-left: 10px;
+      font-size: 0.9rem;
+      color: #555;
+      font-family: monospace;
+    }
+
+    /* Font suggestions */
+    .font-suggestions { margin-top: 2rem; }
+    .font-suggestions li {
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 StyleMimic</h1>
+  <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="image" accept="image/*" required>
+    <button type="submit">Upload Image</button>
+  </form>
+
+  {% if uploaded %}
+    <hr>
+    <h2>Uploaded Image</h2>
+    <img src="{{ image_path }}" width="300">
+
+    <h3>📝 BLIP Caption</h3>
+    <p>{{ caption }}</p>
+
+    <h3>🏷 CLIP Tags</h3>
+    <ul>
+      {% for tag in clip_tags.split(',') %}
+        <li>{{ tag.strip() }}</li>
+      {% endfor %}
+    </ul>
+
+    <h3>🤖 LLaMA 3 Tags</h3>
+    <ul>
+      {% for tag in llama_tags.split(',') %}
+        <li>{{ tag.strip() }}</li>
+      {% endfor %}
+    </ul>
+
+    <h3>🎨 Color Palette</h3>
+    <div class="palette-box">
+      {% for color in palette %}
+        <div class="color-block" style="background-color: {{ color }};"></div>
+      {% endfor %}
+    </div>
+    <ul>
+      {% for color in palette %}
+        <li>{{ color }}</li>
+      {% endfor %}
+    </ul>
+
+    {% if similar_palettes %}
+      <div class="similar-palettes-container">
+        <h3>🎨 Similar Color Palettes</h3>
+        {% for sim_palette in similar_palettes %}
+          <div class="similar-palette">
+            {% for color in sim_palette %}
+              <div class="color-block" style="background-color: {{ color }};" title="{{ color }}"></div>
+            {% endfor %}
+            <div class="palette-label">{{ sim_palette | join(', ') }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if suggested_fonts %}
+      <div class="font-suggestions">
+        <h3>🔤 Suggested Fonts</h3>
+        <ul>
+          {% for font in suggested_fonts %}
+            <li style="font-family: '{{ font }}', sans-serif;">
+              {{ font }} — The quick brown fox jumps over the lazy dog
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+  {% endif %}
+</body>
+</html>
